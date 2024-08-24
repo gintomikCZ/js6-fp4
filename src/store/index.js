@@ -34,12 +34,20 @@ const store = createStore({
       // data.forEach(record => {
       //   state.persons['' + record.id] = record
       // })
+    },
+    setProjects (state, data) {
+      state.projects = data
     }
   },
   actions: {
     fetchPersons (context) {
       return db.get('js6persons').then(data  => {
         context.commit('setPersons', data)
+      })
+    },
+    fetchProjects (context) {
+      return db.get('js6projects').then(data => {
+        context.commit('setProjects', data)
       })
     }
   }

@@ -5,6 +5,7 @@ import ProjectsFormPage from '../views/ProjectsFormPage.vue'
 import PersonsListPage from '../views/PersonsListPage.vue'
 import TasksFormPage from '../views/TasksFormPage.vue'
 import FormPage from '../views/FormPage.vue'
+import ProjectsListPage from '../views/ProjectsListPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/personslist',
       name: 'personsList',
       component: PersonsListPage
+    },
+    {
+      path: '/projectslist',
+      name: 'projectslist',
+      component: ProjectsListPage
     },
     {
       path: '/tasks-form/:id',
