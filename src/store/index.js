@@ -6,13 +6,12 @@ const store = createStore({
     itWorks: 'itWorks',
     formSettings: formSettings,
     persons: [],
-      // [ {id:, first:, last: } ]
-      // hledat konkrétní osobu - state.persons.findIndex(person => personid === hledane_id)
-      // <li v-for="person in persons"> {{ person.first + person.last}}</li>
     projects: [],
     positions: [],
     tasks: [],
-
+    taskDetail: null,
+    personDetail: null,
+    personsTasks: []
   },
   mutations: {
     setOptions (state, payload) { // {formName: persons, control: positionid, options: [{label: '...', value 8}]}
@@ -29,25 +28,52 @@ const store = createStore({
     },
     setPersons (state, data) {
       state.persons = data
-      // normalizační datová struktura
-      // state.persons = {}
-      // data.forEach(record => {
-      //   state.persons['' + record.id] = record
-      // })
     },
     setProjects (state, data) {
       state.projects = data
+    },
+    setTasks (state, data) {
+      state.tasks = data
+    },
+    setTask (state, record) {
+      state.taskDetail = record
+    },
+    setPersonsTasks (state, data) {
+      state.personsTasks = data
+    },
+    setPerson (state, record) {
+      state.personDetail = record
     }
   },
   actions: {
     fetchPersons (context) {
-      return db.get('js6persons').then(data  => {
+      return db.get('js6persons').then(data => {
         context.commit('setPersons', data)
       })
     },
     fetchProjects (context) {
       return db.get('js6projects').then(data => {
         context.commit('setProjects', data)
+      })
+    },
+    fetchTasks (context) {
+      return db.get('js6tasks').then(data => {
+        context.commit('setTasks', data)
+      })
+    },
+    fetchTask (context, id) {
+      return db.get('js6tasks/' + id).then(record => {
+        context.commit('setTask', record)
+      })
+    },
+    fetchPersonsTasks (context, payload) { // { filter: 'taskid', id: 89 }
+      return db.get('js6personstasks?' + payload.filter + '=' + payload.id).then(data => {
+        context.commit('setPersonsTasks', data)
+      })
+    },
+    fetchPerson (context, id) {
+      return db.get('js6persons/' + id).then(record => {
+        context.commit('setPerson', record)
       })
     }
   }

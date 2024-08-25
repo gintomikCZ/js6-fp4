@@ -37,12 +37,21 @@ export default {
       type: Boolean
     }
   },
-  mounted () {
-    document.addEventListener('click', this.clickOutside)
+  watch: {
+    show (nv) {
+      if (nv) {
+        document.addEventListener('click', this.clickOutside)
+      } else {
+        document.removeEventListener('click', this.clickOutside)
+      }
+    }
   },
-  unmounted () {
-    document.removeEventListener('click', this.clickOutside)
-  },
+  // mounted () {
+  //   document.addEventListener('click', this.clickOutside)
+  // },
+  // beforeUnmount () {
+  //   document.removeEventListener('click', this.clickOutside)
+  // },
   methods: {
     clickOutside (e) {
       const el = document.getElementById('modal-body')

@@ -2,9 +2,9 @@
   <h1>Persons list</h1>
   <ul v-if="!loading">
     <li v-for="person in persons" style="display: flex; gap: 1rem;">
-      <div>{{ person.last + person.first + ', ' + person.position }}</div>
+      <div @click="$router.push('/persondetail/' + person.id)">{{ person.last + person.first + ', ' + person.position }}</div>
       <button @click="onEditClick(person.id)">edit</button>
-      <button @click="onDeleteClick(person.id)">delete</button>
+      <button @click.stop="onDeleteClick(person.id)">delete</button>
     </li>
   </ul>
   <TModal

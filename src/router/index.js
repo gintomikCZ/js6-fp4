@@ -6,6 +6,9 @@ import PersonsListPage from '../views/PersonsListPage.vue'
 import TasksFormPage from '../views/TasksFormPage.vue'
 import FormPage from '../views/FormPage.vue'
 import ProjectsListPage from '../views/ProjectsListPage.vue'
+import TasksListPage from '../views/TasksListPage.vue'
+import TaskDetailPage from '../views/TaskDetailPage.vue'
+import PersonDetailPage from '../views/PersonDetailPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +63,21 @@ const router = createRouter({
       name: 'tasksFormEdit',
       // component: TasksFormPage
       component: FormPage
+    },
+    {
+      path: '/taskslist',
+      name: 'tasksList',
+      component: TasksListPage
+    },
+    {
+      path: '/taskdetail/:id',
+      name: 'taskDetail',
+      component: TaskDetailPage
+    },
+    {
+      path: '/persondetail/:id',
+      name: 'personDetail',
+      component: PersonDetailPage
     }
   ]
 })

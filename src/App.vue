@@ -2,8 +2,8 @@
 
 <template>
   <RouterView />
-  <button @click="showMenu = true">menu</button>
-  <TContextMenu v-if="showMenu" :settings="settings" @item-clicked="onItemClicked"/>
+  <!-- <button @click="showMenu = true">menu</button>
+  <TContextMenu v-if="showMenu" :settings="settings" @item-clicked="onItemClicked"/> -->
 </template>
 
 <script>
