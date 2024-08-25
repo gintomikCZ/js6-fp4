@@ -7,10 +7,11 @@
     </li>
   </ul>
   <TModal
-    v-if="showModal"
+    :show="showModal"
     :msg="modalMsg"
-    :cancelBtn="modalCancelBtn"
-    confirmBtn
+    cancelBtn
+    :confirmBtn="modalOkBtn"
+    :cancelLabel="cancelBtnLabel"
     @close-me="closeModal"
     @cancel="closeModal"
     @confirm="deleteProject"
@@ -26,8 +27,9 @@ export default {
       loading: true,
       showModal: false,
       modalMsg: '',
-      modalCancelBtn: false,
-      projectidToDelete: null
+      modalOkBtn: false,
+      projectidToDelete: null,
+      cancelBtnLabel: ''
     }
   },
   computed: {
@@ -44,10 +46,15 @@ export default {
     onDeleteClick (id) {
       this.projectidToDelete = id
       db.get('js6tasks?projectid=' + id).then(data => {
-        this.modalMsg = data.length
-          ? 'sorry, tohle smazat nepůjde'
-          : 'potvrď, že fakt chceš mazat projekt s názvem: ' + this.projects.find(project => project.id === id).project
-        this.modalCancelBtn = !data.length
+        if(!data.length) {
+          this.modalMsg = 'potvrď, že fakt chceš mazat projekt s názvem: ' + this.projects.find(project => project.id === id).project
+          this.modalOkBtn = true
+          this.cancelBtnLabel = 'cancel'
+        } else {
+          this.modalMsg = 'sorry, tohle smazat nepůjde'
+          this.modalOkBtn = false
+          this.cancelBtnLabel = 'OK'
+        }
         this.showModal = true
       })
     },

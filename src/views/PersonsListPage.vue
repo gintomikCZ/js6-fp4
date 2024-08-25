@@ -8,7 +8,7 @@
     </li>
   </ul>
   <TModal
-    v-if="showModal"
+    :show="showModal"
     :msg="modalMsg"
     :cancelBtn="modalCancelBtn"
     confirmBtn

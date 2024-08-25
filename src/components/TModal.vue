@@ -1,20 +1,18 @@
 <template>
-  <div class="modal-bg">
+  <div class="modal-bg" v-if="show">
     <div class="modal-body" id="modal-body">
       <div class="modal-content">
         {{  msg }}
       </div>
       <div class="modal-footer">
-        <button v-if="cancelBtn" @click="$emit('cancel')">{{ cancelLabel }}</button>
-        <button v-if="confirmBtn" @click="$emit('confirm')">{{ confirmLabel }}</button>
+        <button v-if="cancelBtn" @click.stop="$emit('cancel')">{{ cancelLabel }}</button>
+        <button v-if="confirmBtn" @click.stop="$emit('confirm')">{{ confirmLabel }}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
-
 
 export default {
   props: {
@@ -34,6 +32,9 @@ export default {
     confirmLabel: {
       type: String,
       default: 'OK'
+    },
+    show: {
+      type: Boolean
     }
   },
   mounted () {
