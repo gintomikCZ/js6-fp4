@@ -10,7 +10,7 @@
   <TModal
     :show="showModal"
     :msg="modalMsg"
-    :cancelBtn="modalCancelBtn"
+    cancelBtn
     confirmBtn
     @close-me="closeModal"
     @cancel="closeModal"
@@ -28,8 +28,8 @@ export default {
       loading: true,
       showModal: false,
       modalMsg: '',
-      modalCancelBtn: false,
-      taskidToDelete: null
+      taskidToDelete: null,
+      personsTasks: []
     }
   },
   computed: {
@@ -49,13 +49,13 @@ export default {
     onDeleteClick (id) {
       this.taskidToDelete = id
       db.get('js6personstasks?taskid=' + id).then(data => {
+        this.personsTasks = data
         if (data.length) {
-          this.modalMsg = 'sorry, tenhle úkol jen tak nesmázneš'
+          this.modalMsg = 'k tomuhle úkolu jsou přiřazení lidi. přesto smazat ?'
         } else {
           const taskToDelete = this.tasks.find(task => task.id === id)
           this.modalMsg = 'fakt chceš smazat úkol: ' + taskToDelete.task + ' ?'
         }
-        this.modalCancelBtn = !data.length
         this.showModal = true
       })
     },
@@ -63,13 +63,21 @@ export default {
       this.showModal = false
       this.modalMsg = ''
       this.taskidToDelete = null
+      this.personsTasks = []
     },
     deleteTask () {
-      db.delete('js6tasks', {id: this.taskidToDelete}).then(() => {
-        this.closeModal()
-        this.loading = true
-        this.$store.dispatch('fetchTasks').then(() => {
-          this.loading = false
+      // maže spolu s taskem i všechny relační záznamy z js6personstasks !!!!!!
+      const promises = this.personsTasks.map(record => {
+        db.delete('js6personstasks', {id: record.id})
+      })
+      Promise.all(promises).then(() => {
+        db.delete('js6tasks', {id: this.taskidToDelete}).then(() => {
+          this.closeModal()
+          this.loading = true
+          this.personsTasks = []
+          this.$store.dispatch('fetchTasks').then(() => {
+            this.loading = false
+          })
         })
       })
     }

@@ -50,6 +50,7 @@ export default {
       this.$router.push('/persons-form/' + id)
     },
     onDeleteClick (id) {
+      // nedovolí mazat záznam, pokud existují relační záznamy v js6personstasks
       this.personidToDelete = id
       db.get('js6personstasks?personid=' + id).then(data => {
         if (data.length) {
