@@ -1,11 +1,19 @@
 <template>
-  <h1>Projects list</h1>
-  <ul v-if="!loading">
-    <li v-for="project in projects" style="display: flex;">
-      <div>{{ project.project }}</div>
-      <button style="margin-left: 1rem;" @click.stop="onDeleteClick(project.id)">delete</button>
-    </li>
-  </ul>
+
+
+  <ListPageComponent header="Projects list" btnLink="/projects-form" btnLabel="add project">
+    <TList v-if="!loading">
+      <TListItem
+        v-for="project in projects"
+        @edit-click="onEditClick(project.id)"
+        @delete-click="onDeleteClick(project.id)"
+        highlight="danger"
+      >
+        <div @click="$router.push('/projectdetail/' + project.id)">{{ project.project }}</div>
+      </TListItem>
+    </TList>
+  </ListPageComponent>
+
   <TModal
     :show="showModal"
     :msg="modalMsg"
@@ -21,6 +29,9 @@
 <script>
 import db from '../utils/db.js'
 import TModal from '../components/TModal.vue'
+import TList from '../components/TList.vue'
+import TListItem from '../components/TListItem.vue'
+import ListPageComponent from '../components/ListPageComponent.vue'
 export default {
   data () {
     return {
@@ -71,10 +82,14 @@ export default {
           this.loading = false
         })
       })
+    },
+    onEditClick (id) {
+      this.$router.push('/projects-form/' + id)
     }
   },
-  components: { TModal }
+  components: { TModal, TList, TListItem, ListPageComponent }
 }
 
 
 </script>
+

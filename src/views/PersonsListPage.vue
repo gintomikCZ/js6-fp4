@@ -1,12 +1,17 @@
 <template>
-  <h1>Persons list</h1>
-  <ul v-if="!loading">
-    <li v-for="person in persons" style="display: flex; gap: 1rem;">
-      <div @click="$router.push('/persondetail/' + person.id)">{{ person.last + person.first + ', ' + person.position }}</div>
-      <button @click="onEditClick(person.id)">edit</button>
-      <button @click.stop="onDeleteClick(person.id)">delete</button>
-    </li>
-  </ul>
+
+  <ListPageComponent header="Persons list" btnLink="/persons-form" btnLabel="add person">
+    <TList v-if="!loading">
+      <TListItem
+        v-for="person in persons"
+        @edit-click="onEditClick(person.id)"
+        @delete-click="onDeleteClick(person.id)"
+      >
+        <div @click="$router.push('/persondetail/' + person.id)">{{ person.last + person.first + ', ' + person.position }}</div>
+      </TListItem>
+    </TList>
+  </ListPageComponent>
+
   <TModal
     :show="showModal"
     :msg="modalMsg"
@@ -21,9 +26,11 @@
 <script>
 import db from '@/utils/db';
 import TModal from '../components/TModal.vue'
+import TList from '../components/TList.vue'
+import TListItem from '../components/TListItem.vue'
+import ListPageComponent from '../components/ListPageComponent.vue'
 
 
-// import db from '../utils/db.js'
 
 export default {
   data () {
@@ -32,7 +39,8 @@ export default {
       showModal: false,
       modalMsg: '',
       modalCancelBtn: false,
-      personidToDelete: null
+      personidToDelete: null,
+      personsTasks: []
     }
   },
   computed: {
@@ -50,16 +58,15 @@ export default {
       this.$router.push('/persons-form/' + id)
     },
     onDeleteClick (id) {
-      // nedovolí mazat záznam, pokud existují relační záznamy v js6personstasks
       this.personidToDelete = id
       db.get('js6personstasks?personid=' + id).then(data => {
+        this.personsTasks = data
         if (data.length) {
-          this.modalMsg = 'sorry, tuhle osobu jen tak nesmázneš'
+          this.modalMsg = 'tato osoba má přidělené úkoly. přesto smazat?'
         } else {
           const personToDelete = this.persons.find(person => person.id === id)
-          this.modalMsg = 'fakt chceš smazat člověka jménem: ' + personToDelete.last + ' ' + personToDelete.first + ' ?'
+          this.modalMsg = 'fakt chceš smazat osobu: ' + personToDelete.first + ' ' + personToDelete.last + '?'
         }
-        this.modalCancelBtn = !data.length
         this.showModal = true
       })
     },
@@ -69,17 +76,32 @@ export default {
       this.personidToDelete = null
     },
     deletePerson () {
-      db.delete('js6persons', {id: this.personidToDelete}).then(() => {
-        this.closeModal()
-        this.loading = true
-        this.$store.dispatch('fetchPersons').then(() => {
-          this.loading = false
-        })
+      // maže spolu s taskem i všechny relační záznamy z js6personstasks !!!!!!
+      const promises = this.personsTasks.map(record => {
+        return db.delete('js6personstasks', {id: record.id})
       })
+      Promise.all(promises)
+        .then(() => {
+          db.delete('js6persons', {id: this.personidToDelete})
+            .then(() => {
+              this.closeModal()
+              this.loading = true
+              this.personsTasks = []
+              this.$store.dispatch('fetchPersons').then(() => {
+                this.loading = false
+              })
+          })
+        })
     }
   },
-  components: { TModal }
+  components: { TModal, TList, TListItem, ListPageComponent }
 }
 
 
 </script>
+
+<style scoped>
+.container {
+  margin-top: 2rem
+}
+</style>

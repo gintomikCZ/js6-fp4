@@ -1,32 +1,21 @@
-
-
 <template>
+  <TNavBar :links="links" />
   <RouterView />
-  <!-- <button @click="showMenu = true">menu</button>
-  <TContextMenu v-if="showMenu" :settings="settings" @item-clicked="onItemClicked"/> -->
 </template>
 
 <script>
-  import TContextMenu from '@/components/TContextMenu.vue'
+  import TNavBar from '@/components/TNavBar.vue'
   export default {
-    components: { TContextMenu },
+    components: { TNavBar },
     data () {
       return {
         showMenu: false,
-        settings: [
-          'addPerson', 'addTask', 'addProject'
+        links: [
+          { label: 'home', link: '/' },
+          { label: 'projects', link: '/projectslist' },
+          { label: 'persons', link: '/personslist'},
+          { label: 'tasks', link: '/taskslist'}
         ]
-      }
-    },
-    methods: {
-      onItemClicked (payload) {
-        this.showMenu = false
-        const obj = {
-          addPerson: '/persons-form',
-          addTask: '/tasks-form/add',
-          addProject: '/projects-form'
-        }
-        this.$router.push(obj[payload])
       }
     }
   }

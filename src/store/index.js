@@ -3,7 +3,6 @@ import formSettings from './formSettings.js'
 import db from '../utils/db.js'
 const store = createStore({
   state: {
-    itWorks: 'itWorks',
     formSettings: formSettings,
     persons: [],
     projects: [],
@@ -11,7 +10,9 @@ const store = createStore({
     tasks: [],
     taskDetail: null,
     personDetail: null,
-    personsTasks: []
+    personsTasks: [],
+    projectDetail: null,
+    tasksByProject: []
   },
   mutations: {
     setOptions (state, payload) { // {formName: persons, control: positionid, options: [{label: '...', value 8}]}
@@ -43,6 +44,12 @@ const store = createStore({
     },
     setPerson (state, record) {
       state.personDetail = record
+    },
+    setProject (state, record) {
+      state.projectDetail = record
+    },
+    setTasksByProject(state, data) {
+      state.tasksByProject = data
     }
   },
   actions: {
@@ -56,6 +63,11 @@ const store = createStore({
         context.commit('setProjects', data)
       })
     },
+    fetchProject (context, id) {
+      return db.get('js6projects/' + id).then(record => {
+        context.commit('setProject', record)
+      })
+    },
     fetchTasks (context) {
       return db.get('js6tasks').then(data => {
         context.commit('setTasks', data)
@@ -64,6 +76,11 @@ const store = createStore({
     fetchTask (context, id) {
       return db.get('js6tasks/' + id).then(record => {
         context.commit('setTask', record)
+      })
+    },
+    fetchTasksByProject (context, projectid) {
+      return db.get('js6tasks?projectid=' + projectid).then(data => {
+        context.commit('setTasksByProject', data)
       })
     },
     fetchPersonsTasks (context, payload) { // { filter: 'taskid', id: 89 }

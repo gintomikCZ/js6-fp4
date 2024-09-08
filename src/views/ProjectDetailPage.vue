@@ -1,23 +1,34 @@
 <template>
-
-  <ListPageComponent header="Tasks list" btnLink="/tasks-form/add" btnLabel="add task">
-    <TList v-if="!loading">
-      <!-- completed - 'success', před due date - '' - over due - 'danger' -->
-      <TListItem
-        v-for="task in tasks"
-        :highlight="getHighlight(task)"
-        @edit-click="onEditClick(task.id)"
-        @delete-click="onDeleteClick(task.id)"
-      >
-        <div class="task-row" @click="$router.push('/taskdetail/' + task.id)">
-          <div>{{ task.task }}</div>
-          <div>{{ task.date}}</div>
-          <div>{{ getPriority(task.priority) }}</div>
-        </div>
-      </TListItem>
-    </TList>
-  </ListPageComponent>
-
+  <h1>project detail page</h1>
+  <div v-if="!loading">
+    <div>
+      <span>Project name: </span>
+      <strong>{{ project.project }}</strong>
+    </div>
+    <div>
+      <span>Description: </span>
+      <strong>{{ project.description }}</strong>
+    </div>
+    <h2>related tasks</h2>
+    <button @click="$router.push('/tasks-form/add/' + $route.params.id)">add task</button>
+    <div class="container">
+      <div v-if="!tasks.length">there are no tasks in this projects</div>
+      <TList v-else>
+        <TListItem
+          v-for="task in tasks"
+          :highlight="getHighlight(task)"
+          @edit-click="onEditClick(task.id)"
+          @delete-click="onDeleteClick(task.id)"
+        >
+          <div class="task-row" @click="$router.push('/taskdetail/' + task.id)">
+            <div>{{ task.task }}</div>
+            <div>{{ task.date}}</div>
+            <div>{{ getPriority(task.priority) }}</div>
+          </div>
+        </TListItem>
+      </TList>
+    </div>
+  </div>
   <TModal
     :show="showModal"
     :msg="modalMsg"
@@ -27,16 +38,15 @@
     @cancel="closeModal"
     @confirm="deleteTask"
   />
+
 </template>
 
 <script>
-import db from '@/utils/db';
-import TModal from '../components/TModal.vue'
+import { getPriority, getHighlight } from '@/utils/utils.js'
 import TList from '../components/TList.vue'
 import TListItem from '../components/TListItem.vue'
-import { getPriority, getHighlight } from '@/utils/utils.js'
-import ListPageComponent from '../components/ListPageComponent.vue'
-
+import TModal from '../components/TModal.vue'
+import db from '@/utils/db.js'
 
 export default {
   data () {
@@ -49,12 +59,18 @@ export default {
     }
   },
   computed: {
+    project () {
+      return this.$store.state.projectDetail
+    },
     tasks () {
-      return this.$store.state.tasks
+      return this.$store.state.tasksByProject
     }
   },
   created () {
-    this.$store.dispatch('fetchTasks').then(() => {
+    Promise.all([
+      this.$store.dispatch('fetchProject', this.$route.params.id),
+      this.$store.dispatch('fetchTasksByProject', this.$route.params.id)
+    ]).then(() => {
       this.loading = false
     })
   },
@@ -99,20 +115,23 @@ export default {
               this.closeModal()
               this.loading = true
               this.personsTasks = []
-              this.$store.dispatch('fetchTasks').then(() => {
+              this.$store.dispatch('fetchTasksByProject', this.$route.params.id).then(() => {
                 this.loading = false
               })
             })
         })
     }
   },
-  components: { TModal, TList, TListItem, ListPageComponent }
+  components: { TList, TListItem, TModal }
 }
 
 
 </script>
 
 <style scoped>
+strong {
+  font-weight: bold;
+}
 .task-row {
   display: flex;
   gap: 1rem;
@@ -121,16 +140,13 @@ export default {
   flex-grow: 1;
 }
 .task-row > div:nth-child(2) {
-  /* flex-basis: 100px;
-  flex-grow: 0;
-  flex-shrink: 0; */
   flex: 0 0 100px;
 }
 .task-row > div:last-child {
-  /* flex-grow: 0;
-  flex-basis: 70px;
-  flex-shrink: 0; */
   flex: 0 0 70px;
   text-align: center;
+}
+.container {
+  margin-top: 1rem;
 }
 </style>

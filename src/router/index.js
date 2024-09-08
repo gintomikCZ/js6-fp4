@@ -9,6 +9,7 @@ import ProjectsListPage from '../views/ProjectsListPage.vue'
 import TasksListPage from '../views/TasksListPage.vue'
 import TaskDetailPage from '../views/TaskDetailPage.vue'
 import PersonDetailPage from '../views/PersonDetailPage.vue'
+import ProjectDetailPage from '../views/ProjectDetailPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,6 +79,11 @@ const router = createRouter({
       path: '/persondetail/:id',
       name: 'personDetail',
       component: PersonDetailPage
+    },
+    {
+      path: '/projectdetail/:id',
+      name: 'projectDetail',
+      component: ProjectDetailPage
     }
   ]
 })

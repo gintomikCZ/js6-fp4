@@ -1,16 +1,14 @@
 <template>
   <main>
     <h1>Home page</h1>
-    <div>{{ itWorks }}</div>
+    <div>welcome to our great app :-)</div>
   </main>
 </template>
 
 <script>
 
 export default {
-  computed: {
-    itWorks () { return this.$store.state.itWorks}
-  }
+  name: 'HomeView'
 }
 
 </script>
